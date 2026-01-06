@@ -6,7 +6,7 @@ import { lrgbToRgb, rgbToLrgb } from './adapters/gamma';
 import { labToLch, lchToLab, oklabToOklch, oklchToOklab } from './adapters/polar';
 import { hslToHsv, hsvToHsl, hsvToHwb, hsvToRgb, hwbToHsv, rgbToHsv } from './adapters/srgb';
 
-const NATIVE_HUB: { [T in ColorMode]: 'xyz50' | 'xyz65' } = {
+export const NATIVE_HUB: { [T in ColorMode]: 'xyz50' | 'xyz65' } = {
   rgb: 'xyz65',
   hsl: 'xyz65',
   hwb: 'xyz65',
@@ -16,7 +16,7 @@ const NATIVE_HUB: { [T in ColorMode]: 'xyz50' | 'xyz65' } = {
   lch: 'xyz50',
 };
 
-const TO_HUB: { [T in ColorMode]: (input: ColorSpace<T>) => ColorSpace<'xyz50' | 'xyz65'> } = {
+export const TO_HUB: { [T in ColorMode]: (input: ColorSpace<T>) => ColorSpace<'xyz50' | 'xyz65'> } = {
   rgb: (input) => lrgbToXyz65(rgbToLrgb(input)),
   hsl: (input) => lrgbToXyz65(rgbToLrgb(hsvToRgb(hslToHsv(input)))),
   hwb: (input) => lrgbToXyz65(rgbToLrgb(hsvToRgb(hwbToHsv(input)))),
@@ -26,7 +26,7 @@ const TO_HUB: { [T in ColorMode]: (input: ColorSpace<T>) => ColorSpace<'xyz50' |
   lch: (input) => labToXyz50(lchToLab(input)),
 };
 
-const FROM_HUB: { [T in ColorMode]: (input: ColorSpace<'xyz50' | 'xyz65'>) => ColorSpace<T> } = {
+export const FROM_HUB: { [T in ColorMode]: (input: ColorSpace<'xyz50' | 'xyz65'>) => ColorSpace<T> } = {
   rgb: (input) => lrgbToRgb(xyz65ToLrgb(input as ColorSpace<'xyz65'>)),
   hsl: (input) => hsvToHsl(rgbToHsv(lrgbToRgb(xyz65ToLrgb(input as ColorSpace<'xyz65'>)))),
   hwb: (input) => hsvToHwb(rgbToHsv(lrgbToRgb(xyz65ToLrgb(input as ColorSpace<'xyz65'>)))),
@@ -36,7 +36,7 @@ const FROM_HUB: { [T in ColorMode]: (input: ColorSpace<'xyz50' | 'xyz65'>) => Co
   lch: (input) => labToLch(xyz50ToLab(input as ColorSpace<'xyz50'>)),
 };
 
-const DIRECT: { [T in ColorMode]?: Partial<{ [X in Exclude<ColorMode, T>]: ColorFn<T, X> }> } = {
+export const DIRECT: { [T in ColorMode]?: Partial<{ [X in Exclude<ColorMode, T>]: ColorFn<T, X> }> } = {
   rgb: {
     hsl: (input) => hsvToHsl(rgbToHsv(input)),
     hwb: (input) => hsvToHwb(rgbToHsv(input)),
@@ -61,7 +61,7 @@ const DIRECT: { [T in ColorMode]?: Partial<{ [X in Exclude<ColorMode, T>]: Color
   },
 };
 
-const HUE_BASE: Partial<{ [T in ColorMode]: (input: ColorSpace<T>) => ColorSpace<ColorHue> }> = {
+export const HUE_BASE: Partial<{ [T in ColorMode]: (input: ColorSpace<T>) => ColorSpace<ColorHue> }> = {
   rgb: (input) => hsvToHsl(rgbToHsv(input)),
   lab: (input) => labToLch(input),
   oklab: (input) => oklabToOklch(input),
