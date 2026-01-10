@@ -159,3 +159,39 @@ export const createScales = <T extends ColorMode>(
   }
   return interpolate;
 };
+
+export const mixColor = <T extends ColorMode>(
+  start: ColorSpace<T>,
+  end: ColorSpace<T>,
+  mode: T,
+  t: number,
+): ColorSpace<T> => {
+  const weight = t < 0 ? 0 : t > 1 ? 1 : t;
+
+  const hueIndex =
+    mode === 'hsl' || mode === 'hwb'
+      ? 0
+      : mode === 'lch' || mode === 'oklch'
+        ? 2
+        : -1;
+
+  const res = [0, 0, 0] as ColorSpace<T>;
+
+  for (let c = 0; c < 3; c++) {
+    if (c === hueIndex) {
+      const sH = start[c];
+      let eH = end[c];
+      const diff = eH - sH;
+
+      if (diff > 180) eH -= 360;
+      else if (diff < -180) eH += 360;
+
+      const h = sH + (eH - sH) * weight;
+      res[c] = h < 0 ? h + 360 : h % 360;
+    } else {
+      res[c] = start[c] + (end[c] - start[c]) * weight;
+    }
+  }
+
+  return res;
+};
