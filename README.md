@@ -6,11 +6,13 @@ Type-safe, blazingly-fast, and zero-dependency. Most color tools are either too 
 
 It uses CIEXYZ (D65/D50) and Bradford CAT to move colors around. I'm told this is the "correct" way to do it so the colors don't look weird.
 
--   **Converts stuff**: Changes colors between `rgb`, `hsl`, `hwb`, `lab`, `lch`, `oklab`, and `oklch`.
--   **Reads CSS**: You give it a string like `#ff0000` or `oklab(59% 0.22 0.12)` and it figures it out.
--   **Writes CSS**: It turns the color objects back into strings you can actually use in your CSS.
--   **Checks contrast**: Calculates APCA contrast and can find a color that meets a specific contrast target.
--   **Makes palettes**: It can generate harmonies, shades, and multi-color scales.
+- **Converts stuff**: Changes colors between `rgb`, `hsl`, `hwb`, `lab`, `lch`, `oklab`, and `oklch`.
+- **Reads CSS**: You give it a string like `#ff0000` or `oklab(59% 0.22 0.12)` and it figures it out.
+- **Writes CSS**: It turns the color objects back into strings you can actually use in your CSS.
+- **Checks contrast**: Calculates APCA contrast and can find a color that meets a specific contrast target.
+- **Makes palettes**: It can generate harmonies, shades, and multi-color scales.
+- **Validates & Fixes**: Checks if a color is actually displayable on a screen and clamps it if it's not.
+- **Simulates vision**: Shows you how colors look to people with different types of color blindness.
 
 ## How to use it
 
@@ -99,6 +101,39 @@ const scale = createScales(
   'rgb',
   7
 );
+```
+
+### Safety and Comparison
+
+`checkGamut` tells you if a color is "imaginary" (out of bounds), and `clampColor` brings it back to reality so your CSS doesn't break. Use `isEqual` to check if two colors are the same, even if they are in different modes.
+
+```typescript
+import { checkGamut, clampColor } from './utils/gamut';
+import { isEqual, getDistance } from './utils/compare';
+
+const superBright = [1.2, -0.1, 0.5] as ColorSpace<'rgb'>;
+
+const isSafe = checkGamut(superBright, 'rgb'); // false
+const safeColor = clampColor(superBright, 'rgb'); // [1, 0, 0.5]
+
+// Perceptual distance (Delta E OK)
+const diff = getDistance([1, 0, 0], 'rgb', [0.9, 0, 0], 'rgb');
+
+// Compare an RGB color to its HSL equivalent
+const same = isEqual([1, 0, 0], 'rgb', [0, 1, 0.5], 'hsl'); // true
+```
+
+### Accessibility Simulation
+
+See through the eyes of others. This projects colors into a reduced space to simulate color vision deficiency accurately.
+
+```typescript
+import { simulateDeficiency } from './utils/simulate';
+
+const brandColor = [0.2, 0.8, 0.4] as ColorSpace<'rgb'>;
+
+// How does a person with red-blindness see this?
+const protanopiaView = simulateDeficiency(brandColor, 'rgb', 'protanopia');
 ```
 
 ## How the math works (The "Hub" thing)
