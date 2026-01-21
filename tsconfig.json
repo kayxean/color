@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "types": ["node", "vitest/globals"],
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "isolatedModules": true,
     "esModuleInterop": true,
@@ -19,5 +20,5 @@
     "noEmit": true,
     "allowImportingTsExtensions": true
   },
-  "include": ["src", "**/*.ts", "**/*.tsx"]
+  "include": ["src", "test"]
 }
