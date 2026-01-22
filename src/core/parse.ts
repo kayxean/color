@@ -22,6 +22,8 @@ export const parseColor = (
       g = parseInt(hex.substring(2, 4), 16);
       b = parseInt(hex.substring(4, 6), 16);
       if (hex.length === 8) a = parseInt(hex.substring(6, 8), 16) / 255;
+    } else {
+      throw new Error('Invalid Hexadecimal length');
     }
 
     return {

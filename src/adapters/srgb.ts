@@ -127,7 +127,7 @@ export const hwbToHsv: ColorFn<'hwb', 'hsv'> = (input) => {
 
   const V = 1 - B;
 
-  const S = V === 0 ? 0 : (V - W) / V;
+  const S = (V - W) / V;
 
   return [H, S, V] as ColorSpace<'hsv'>;
 };

@@ -41,6 +41,8 @@ export const simulateDeficiency = <T extends ColorMode>(
     rx = y;
     ry = y;
     rz = y;
+  } else {
+    throw new Error(`Unsupported deficiency type: ${type}`);
   }
 
   let res = [rx, ry, rz] as ColorSpace<'xyz50' | 'xyz65'>;
