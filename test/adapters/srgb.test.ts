@@ -28,6 +28,11 @@ describe('srgb adapter (HSV, HSL, HWB, HEX)', () => {
       expect(hsv).toEqual([240, 1, 1]);
     });
 
+    it('should convert Black correctly', () => {
+      const hsv = rgbToHsv([0, 0, 0] as ColorSpace<'rgb'>);
+      expect(hsv).toEqual([0, 0, 0]);
+    });
+
     it('should handle negative hue correctly', () => {
       const hsv = rgbToHsv([1, 0, 1] as ColorSpace<'rgb'>);
       expect(hsv[0]).toBe(300);
@@ -39,6 +44,12 @@ describe('srgb adapter (HSV, HSL, HWB, HEX)', () => {
       expect(hsv[2]).toBe(0.5);
     });
 
+    it('should cover the negative hue wrap (H < 0)', () => {
+      const hsv = rgbToHsv([1, 0, 0.5] as ColorSpace<'rgb'>);
+      expect(hsv[0]).toBeGreaterThan(0);
+      expect(hsv[0]).toBeLessThan(360);
+    });
+
     it('should round-trip RGB -> HSV -> RGB', () => {
       const original = [0.2, 0.8, 0.4] as ColorSpace<'rgb'>;
       const hsv = rgbToHsv(original);
@@ -47,9 +58,7 @@ describe('srgb adapter (HSV, HSL, HWB, HEX)', () => {
       expect(back[1]).toBeCloseTo(original[1], 5);
       expect(back[2]).toBeCloseTo(original[2], 5);
     });
-  });
 
-  describe('hsvToRgb branches', () => {
     it('should convert hue 0-60', () => {
       const rgb = hsvToRgb([30, 1, 1] as ColorSpace<'hsv'>);
       expect(rgb[0]).toBe(1);
@@ -127,6 +136,18 @@ describe('srgb adapter (HSV, HSL, HWB, HEX)', () => {
     it('should handle B=1 correctly', () => {
       const hsv = hwbToHsv([0, 0, 1] as ColorSpace<'hwb'>);
       expect(hsv).toEqual([0, 0, 0]);
+    });
+
+    it('should convert a standard HWB color (sum < 1)', () => {
+      const hsv = hwbToHsv([0, 0.2, 0.3] as ColorSpace<'hwb'>);
+      expect(hsv[2]).toBeCloseTo(0.7, 5);
+      expect(hsv[1]).toBeCloseTo(0.5 / 0.7, 5);
+    });
+
+    it('should handle pure black in HWB (V = 0 branch)', () => {
+      const hsv = hwbToHsv([0, 0, 1] as ColorSpace<'hwb'>);
+      expect(hsv[2]).toBe(0);
+      expect(hsv[1]).toBe(0);
     });
   });
 

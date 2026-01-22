@@ -86,6 +86,15 @@ describe('parseColor', () => {
         'Unsupported mode',
       );
     });
+
+    it('should throw on invalid hex lengths (e.g., 5 or 7 digits)', () => {
+      // This string starts with # so it enters hex logic,
+      // but fails both length checks (3/4 and 6/8)
+      expect(() => parseColor('#abcde')).toThrow('Invalid Hexadecimal length');
+      expect(() => parseColor('#abcdefg')).toThrow(
+        'Invalid Hexadecimal length',
+      );
+    });
   });
 
   describe('Utility behaviors', () => {
