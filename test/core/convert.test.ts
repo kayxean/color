@@ -54,6 +54,15 @@ describe('convertColor', () => {
       );
       expect(result[0]).toBe(0.5);
     });
+
+    it('should use direct mapping for oklch to oklab', () => {
+      const result = convertColor(
+        [0.5, 0.5, 0.5] as ColorSpace<'oklch'>,
+        'oklch',
+        'oklab',
+      );
+      expect(result[0]).toBe(0.5);
+    });
   });
 
   describe('Hub-based Conversions (Same Hub)', () => {
@@ -88,6 +97,36 @@ describe('convertColor', () => {
       );
       expect(result[0]).toBeCloseTo(0);
     });
+
+    it('should convert HSL to OKLab', () => {
+      const result = convertColor(
+        [0, 1, 0.5] as ColorSpace<'hsl'>,
+        'hsl',
+        'oklab',
+      );
+      expect(result[0]).toBeGreaterThan(0);
+      expect(result[1]).toBeGreaterThan(0.2);
+    });
+
+    it('should convert LCH to RGB', () => {
+      const result = convertColor(
+        [100, 0, 0] as ColorSpace<'lch'>,
+        'lch',
+        'rgb',
+      );
+      expect(result[0]).toBeCloseTo(1, 4);
+      expect(result[1]).toBeCloseTo(1, 5);
+      expect(result[2]).toBeCloseTo(1, 5);
+    });
+
+    it('should convert OKLab to Lab', () => {
+      const result = convertColor(
+        [1, 0, 0] as ColorSpace<'oklab'>,
+        'oklab',
+        'lab',
+      );
+      expect(result[0]).toBeCloseTo(100, 1);
+    });
   });
 
   describe('Cross-Hub Conversions (CAT)', () => {
@@ -117,6 +156,20 @@ describe('convertColor', () => {
     it('should convert HWB (D65) to LCH (D50) via CAT', () => {
       const result = convertColor([0, 1, 0] as ColorSpace<'hwb'>, 'hwb', 'lch');
       expect(result[0]).toBeCloseTo(100, 1);
+    });
+
+    it('should convert OKLab to HSL (FROM_HUB path: XYZ65 -> RGB -> HSV -> HSL)', () => {
+      const result = convertColor(
+        [1, 0, 0] as ColorSpace<'oklab'>,
+        'oklab',
+        'hsl',
+      );
+      expect(result[2]).toBeCloseTo(1, 3);
+    });
+
+    it('should convert Lab to HWB', () => {
+      const result = convertColor([0, 0, 0] as ColorSpace<'lab'>, 'lab', 'hwb');
+      expect(result[2]).toBeCloseTo(1, 5);
     });
   });
 

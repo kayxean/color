@@ -58,5 +58,12 @@ describe('compare utils', () => {
       const dRedVsBlue = getDistance(red, 'rgb', blue, 'rgb');
       expect(dRedVsBlue).toBeGreaterThan(dRedVsDarkRed);
     });
+
+    it('should skip conversion for colorA if it is already OKLab', () => {
+      const oklabColor = [0.5, 0.1, 0.1] as ColorSpace<'oklab'>;
+      const rgbColor = [0.5, 0.5, 0.5] as ColorSpace<'rgb'>;
+      const distance = getDistance(oklabColor, 'oklab', rgbColor, 'rgb');
+      expect(distance).toBeGreaterThan(0);
+    });
   });
 });

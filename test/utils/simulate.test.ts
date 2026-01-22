@@ -49,4 +49,29 @@ describe('simulateDeficiency', () => {
       expect(Math.abs(result[2])).toBeLessThan(10);
     });
   });
+
+  describe('Tritanopia (Blue-Blind)', () => {
+    it('should significantly shift blue values', () => {
+      const blue = [0, 0, 1] as ColorSpace<'rgb'>;
+      const result = simulateDeficiency(blue, 'rgb', 'tritanopia');
+      expect(result[2]).toBeLessThan(1);
+      expect(result[1]).toBeGreaterThan(0);
+    });
+
+    it('should keep red relatively stable compared to blue', () => {
+      const red = [1, 0, 0] as ColorSpace<'rgb'>;
+      const result = simulateDeficiency(red, 'rgb', 'tritanopia');
+      expect(result[0]).toBeGreaterThan(0.9);
+    });
+  });
+
+  describe('Edge Cases', () => {
+    it('should throw error for unsupported deficiency type', () => {
+      const input = [1, 0, 0] as ColorSpace<'rgb'>;
+      // @ts-expect-error - testing runtime error for invalid type
+      expect(() => simulateDeficiency(input, 'rgb', 'daltonism')).toThrow(
+        'Unsupported deficiency type: daltonism',
+      );
+    });
+  });
 });
