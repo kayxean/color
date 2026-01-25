@@ -88,7 +88,7 @@ export const DIRECT: Partial<
   oklch: { oklab: [oklchToOklab] },
 };
 
-function runChain(
+export function applyAdapter(
   chain: ColorAdapter[],
   input: ColorBuffer,
   output: ColorBuffer,
@@ -123,12 +123,12 @@ export function convertColor<T extends ColorMode, R extends ColorMode>(
 
   const directChain = DIRECT[from]?.[to];
   if (directChain) {
-    runChain(directChain, input, output);
+    applyAdapter(directChain, input, output);
     return;
   }
 
   const toHubChain = TO_HUB[from];
-  runChain(toHubChain, input, output);
+  applyAdapter(toHubChain, input, output);
 
   const sourceHub = NATIVE_HUB[from];
   const targetHub = NATIVE_HUB[to];
@@ -142,7 +142,7 @@ export function convertColor<T extends ColorMode, R extends ColorMode>(
   }
 
   const fromHubChain = FROM_HUB[to];
-  runChain(fromHubChain, output, output);
+  applyAdapter(fromHubChain, output, output);
 }
 
 export function convertHue<T extends ColorMode>(
