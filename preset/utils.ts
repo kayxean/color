@@ -31,6 +31,20 @@ export function createColor<S extends ColorSpace>(
   return { space, value };
 }
 
+export function cloneColor(color: Color): Color {
+  return {
+    space: color.space,
+    value: new Float32Array(color.value) as ColorArray<ColorSpace>,
+  };
+}
+
+export function updateColor(
+  color: Color,
+  values: [number, number, number] | Float32Array,
+): void {
+  color.value.set(values);
+}
+
 export function mutateColor<T extends ColorSpace>(color: Color, to: T): void {
   const from = color.space;
   if (from === (to as ColorSpace)) return;
@@ -41,13 +55,10 @@ export function mutateColor<T extends ColorSpace>(color: Color, to: T): void {
 
 export function deriveColor<T extends ColorSpace>(color: Color, to: T): Color {
   if (color.space === (to as ColorSpace)) {
-    return {
-      space: color.space,
-      value: new Float32Array(color.value) as ColorArray<typeof color.space>,
-    };
+    return cloneColor(color);
   }
 
-  const newValues = createBuffer(new Float32Array(3)) as ColorArray<T>;
+  const newValues = new Float32Array(3) as ColorArray<T>;
   convertColor(color.value, newValues, color.space, to);
 
   return {
