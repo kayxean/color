@@ -1,159 +1,149 @@
-import type { ColorFn, ColorSpace } from '../core/types';
+import type { ColorBuffer } from '../types';
 
-export const rgbToHsv: ColorFn<'rgb', 'hsv'> = (input) => {
-  const R = input[0];
-  const G = input[1];
-  const B = input[2];
+export function rgbToHsv(input: ColorBuffer, output: ColorBuffer): void {
+  const r = input[0];
+  const g = input[1];
+  const b = input[2];
 
-  const V = Math.max(R, G, B);
-  const min = Math.min(R, G, B);
-  const C = V - min;
+  const v = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const c = v - min;
 
-  const S = V === 0 ? 0 : C / V;
+  const s = v === 0 ? 0 : c / v;
 
-  let H: number;
-  if (C === 0) {
-    H = 0;
-  } else if (V === R) {
-    H = (G - B) / C;
-  } else if (V === G) {
-    H = (B - R) / C + 2;
-  } else {
-    H = (R - G) / C + 4;
+  let h = 0;
+  if (c !== 0) {
+    if (v === r) h = (g - b) / c;
+    else if (v === g) h = (b - r) / c + 2;
+    else h = (r - g) / c + 4;
+    h *= 60;
+    if (h < 0) h += 360;
   }
 
-  H *= 60;
-  if (H < 0) {
-    H += 360;
-  }
+  output[0] = h;
+  output[1] = s;
+  output[2] = v;
+}
 
-  return [H, S, V] as ColorSpace<'hsv'>;
-};
-
-export const hsvToRgb: ColorFn<'hsv', 'rgb'> = (input) => {
-  const H = input[0] / 60;
-  const S = input[1];
-  const V = input[2];
-
-  if (S === 0) {
-    return [V, V, V] as ColorSpace<'rgb'>;
-  }
-
-  const C = V * S;
-  const X = C * (1 - Math.abs((H % 2) - 1));
-  const m = V - C;
-
-  let c: number, t: number, x: number;
-
-  const f = Math.floor(H);
-
-  if (f === 0 || f === 6) {
-    [c, t, x] = [C, X, 0];
-  } else if (f === 1) {
-    [c, t, x] = [X, C, 0];
-  } else if (f === 2) {
-    [c, t, x] = [0, C, X];
-  } else if (f === 3) {
-    [c, t, x] = [0, X, C];
-  } else if (f === 4) {
-    [c, t, x] = [X, 0, C];
-  } else {
-    [c, t, x] = [C, 0, X];
-  }
-
-  const R = c + m;
-  const G = t + m;
-  const B = x + m;
-
-  return [R, G, B] as ColorSpace<'rgb'>;
-};
-
-export const hsvToHsl: ColorFn<'hsv', 'hsl'> = (input) => {
-  const H = input[0];
+export function hsvToRgb(input: ColorBuffer, output: ColorBuffer): void {
+  const h = input[0] / 60;
   const s = input[1];
   const v = input[2];
 
-  const L = v * (1 - s / 2);
-
-  let S: number;
-  if (L === 0 || L === 1) {
-    S = 0;
-  } else {
-    S = (v - L) / Math.min(L, 1 - L);
+  if (s === 0) {
+    output[0] = v;
+    output[1] = v;
+    output[2] = v;
+    return;
   }
 
-  return [H, S, L] as ColorSpace<'hsl'>;
-};
+  const c = v * s;
+  const x = c * (1 - Math.abs((h % 2) - 1));
+  const m = v - c;
+  const f = Math.floor(h);
 
-export const hslToHsv: ColorFn<'hsl', 'hsv'> = (input) => {
-  const H = input[0];
+  let r = 0,
+    g = 0,
+    b = 0;
+
+  if (f === 0 || f === 6) {
+    r = c;
+    g = x;
+    b = 0;
+  } else if (f === 1) {
+    r = x;
+    g = c;
+    b = 0;
+  } else if (f === 2) {
+    r = 0;
+    g = c;
+    b = x;
+  } else if (f === 3) {
+    r = 0;
+    g = x;
+    b = c;
+  } else if (f === 4) {
+    r = x;
+    g = 0;
+    b = c;
+  } else {
+    r = c;
+    g = 0;
+    b = x;
+  }
+
+  output[0] = r + m;
+  output[1] = g + m;
+  output[2] = b + m;
+}
+
+export function hsvToHsl(input: ColorBuffer, output: ColorBuffer): void {
+  const h = input[0];
+  const s = input[1];
+  const v = input[2];
+
+  const l = v * (1 - s / 2);
+  let sL = 0;
+  if (l > 0 && l < 1) {
+    sL = (v - l) / Math.min(l, 1 - l);
+  }
+
+  output[0] = h;
+  output[1] = sL;
+  output[2] = l;
+}
+
+export function hslToHsv(input: ColorBuffer, output: ColorBuffer): void {
+  const h = input[0];
   const s = input[1];
   const l = input[2];
 
-  const V = l + s * Math.min(l, 1 - l);
+  const v = l + s * Math.min(l, 1 - l);
+  const sV = v === 0 ? 0 : 2 * (1 - l / v);
 
-  let S: number;
-  if (V === 0) {
-    S = 0;
-  } else {
-    S = 2 * (1 - l / V);
-  }
+  output[0] = h;
+  output[1] = sV;
+  output[2] = v;
+}
 
-  return [H, S, V] as ColorSpace<'hsv'>;
-};
+export function hsvToHwb(input: ColorBuffer, output: ColorBuffer): void {
+  const h = input[0];
+  const s = input[1];
+  const v = input[2];
 
-export const hsvToHwb: ColorFn<'hsv', 'hwb'> = (input) => {
-  const H = input[0];
-  const S = input[1];
-  const V = input[2];
+  output[0] = h;
+  output[1] = v * (1 - s);
+  output[2] = 1 - v;
+}
 
-  const W = V * (1 - S);
+export function hwbToHsv(input: ColorBuffer, output: ColorBuffer): void {
+  const h = input[0];
+  const w = input[1];
+  const b = input[2];
 
-  const B = 1 - V;
+  const v = 1 - b;
+  const s = v === 0 ? 0 : (v - w) / v;
 
-  return [H, W, B] as ColorSpace<'hwb'>;
-};
+  output[0] = h;
+  output[1] = s < 0 ? 0 : s;
+  output[2] = v;
+}
 
-export const hwbToHsv: ColorFn<'hwb', 'hsv'> = (input) => {
-  const H = input[0];
-  const W = input[1];
-  const B = input[2];
-
-  const sum = W + B;
-  if (sum >= 1) {
-    const V = 1 - B;
-    return [H, 0, V] as ColorSpace<'hsv'>;
-  }
-
-  const V = 1 - B;
-
-  const S = (V - W) / V;
-
-  return [H, S, V] as ColorSpace<'hsv'>;
-};
-
-export const rgbToHex = (input: ColorSpace<'rgb'>, denote = false): string => {
+export function rgbToHex(input: ColorBuffer, denote = false): string {
   const r = Math.round(input[0] * 255);
   const g = Math.round(input[1] * 255);
   const b = Math.round(input[2] * 255);
-
   const hex = ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1);
+  return denote ? `#${hex}` : hex;
+}
 
-  return denote ? hex : `#${hex}`;
-};
-
-export const hexToRgb = (input: string): ColorSpace<'rgb'> => {
+export function hexToRgb(input: string, output: ColorBuffer): void {
   let clean = input.startsWith('#') ? input.slice(1) : input;
-
   if (clean.length === 3) {
     clean = clean[0] + clean[0] + clean[1] + clean[1] + clean[2] + clean[2];
   }
-
-  const num = Number.parseInt(clean, 16);
-
-  const r = ((num >> 16) & 255) / 255;
-  const g = ((num >> 8) & 255) / 255;
-  const b = (num & 255) / 255;
-
-  return [r, g, b] as ColorSpace<'rgb'>;
-};
+  const num = parseInt(clean, 16);
+  output[0] = ((num >> 16) & 255) / 255;
+  output[1] = ((num >> 8) & 255) / 255;
+  output[2] = (num & 255) / 255;
+}
