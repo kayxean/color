@@ -40,11 +40,11 @@ const redHsl = deriveColor(red, 'hsl');
 import { parseColor } from './parse';
 import { formatCss } from './format';
 
-const color = parseColor('oklab(0.62 -0.07 -0.15)');
+const color = parseColor('oklab(62% -0.07 -0.15)');
 // color -> { space: 'oklab', value: Float32Array[...] }
 
 const css = formatCss(color);
-// oklab(0.62 -0.07 -0.15)
+// oklab(62% -0.07 -0.15)
 ```
 
 ### Checking and matching contrast

@@ -90,7 +90,7 @@
       }
     },
     {
-      "includes": ["test/**/*.ts"],
+      "includes": ["tests/**/*.ts"],
       "linter": {
         "rules": {
           "suspicious": {
