@@ -15,7 +15,7 @@ import {
   mutateColor,
   parseColor,
   simulateDeficiency,
-} from '../src/index';
+} from '~/index';
 
 describe('Color API', () => {
   describe('Creating and Mutating', () => {

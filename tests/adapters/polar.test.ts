@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { labToLch, lchToLab, oklabToOklch } from '../../src/adapters/polar';
-import { createBuffer } from '../../src/utils';
+import { labToLch, lchToLab, oklabToOklch } from '~/adapters/polar';
+import { createBuffer } from '~/utils';
 
 describe('Polar Adapter (Cartesian <-> Polar)', () => {
   it('should calculate Chroma correctly using Pythagorean theorem', () => {
