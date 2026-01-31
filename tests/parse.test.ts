@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseColor } from '../src/parse';
+import { parseColor } from '~/parse';
 
 describe('Color Parser', () => {
   describe('Hex Parsing', () => {
@@ -14,6 +14,15 @@ describe('Color Parser', () => {
       const color = parseColor('#0000ff80');
       expect(color.value[2]).toBe(1);
       expect(color.alpha).toBeCloseTo(0.5, 2);
+    });
+
+    it('should parse 4-digit shorthand hex with alpha', () => {
+      const color = parseColor('#000f');
+      expect(color.alpha).toBe(1);
+
+      const halfTransparent = parseColor('#f008');
+      expect(halfTransparent.value[0]).toBe(1);
+      expect(halfTransparent.alpha).toBeCloseTo(0.533, 3);
     });
   });
 
@@ -42,6 +51,19 @@ describe('Color Parser', () => {
     it('should handle percentage alpha strings', () => {
       const color = parseColor('lab(50% 10 -10 / 25%)');
       expect(color.alpha).toBe(0.25);
+    });
+
+    it('should throw error if less than 3 parts are provided', () => {
+      expect(() => parseColor('rgb(255 0)')).toThrow(
+        'Invalid color: rgb(255 0)',
+      );
+    });
+
+    it('should parse hwb correctly', () => {
+      const color = parseColor('hwb(180 20% 30%)');
+      expect(color.space).toBe('hwb');
+      expect(color.value[1]).toBeCloseTo(0.2, 5);
+      expect(color.value[2]).toBeCloseTo(0.3, 5);
     });
   });
 

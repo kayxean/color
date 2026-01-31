@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { simulateDeficiency } from '../../src/shared/simulate';
-import { createColor } from '../../src/utils';
+import { simulateDeficiency } from '~/shared/simulate';
+import { createColor } from '~/utils';
 
 describe('Color Deficiency Simulation', () => {
   it('should simulate Achromatopsia (Total Color Blindness)', () => {

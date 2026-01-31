@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { lrgbToRgb, rgbToLrgb } from '../../src/adapters/gamma';
-import { createBuffer } from '../../src/utils';
+import { lrgbToRgb, rgbToLrgb } from '~/adapters/gamma';
+import { createBuffer } from '~/utils';
 
 describe('Gamma Adapter (sRGB Transfer Function)', () => {
   it('should handle white correctly (Identity)', () => {

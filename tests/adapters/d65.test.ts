@@ -4,8 +4,8 @@ import {
   oklabToXyz65,
   xyz65ToLrgb,
   xyz65ToOklab,
-} from '../../src/adapters/d65';
-import { createBuffer } from '../../src/utils';
+} from '~/adapters/d65';
+import { createBuffer } from '~/utils';
 
 describe('D65 Adapter (LRGB & Oklab)', () => {
   const D65_WHITE_XYZ = [0.95047, 1.0, 1.08883];

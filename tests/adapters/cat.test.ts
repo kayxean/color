@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { xyz50ToXyz65, xyz65ToXyz50 } from '../../src/adapters/cat';
-import { createBuffer } from '../../src/utils';
+import { xyz50ToXyz65, xyz65ToXyz50 } from '~/adapters/cat';
+import { createBuffer } from '~/utils';
 
 describe('CAT Adapter (Bradford Transform)', () => {
   const D65_WHITE = [0.95047, 1.0, 1.08883];
