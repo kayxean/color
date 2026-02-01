@@ -1,7 +1,9 @@
 import type { Color } from './types';
 
+const F_FACTORS = [1, 10, 100, 1000, 10000, 100000];
+
 function normalize(num: number, precision: number): number {
-  const f = 10 ** precision;
+  const f = F_FACTORS[precision] ?? 10 ** precision;
   return Math.round(num * f) / f;
 }
 
@@ -16,29 +18,28 @@ export function formatCss(
   const v2 = value[1];
   const v3 = value[2];
 
+  const isTransparent = typeof alpha === 'number' && alpha < 1;
+
   if (space === 'rgb' && asHex) {
-    const r = Math.round(v1 * 255);
-    const g = Math.round(v2 * 255);
-    const b = Math.round(v3 * 255);
+    const r = (v1 * 255 + 0.5) | 0;
+    const g = (v2 * 255 + 0.5) | 0;
+    const b = (v3 * 255 + 0.5) | 0;
 
-    let hex = ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1);
+    const hex = ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1);
 
-    if (alpha !== undefined && alpha < 1) {
-      const a = Math.round(alpha * 255);
-      hex += ((1 << 8) | a).toString(16).slice(1);
+    if (isTransparent) {
+      const a = (alpha * 255 + 0.5) | 0;
+      return `#${hex}${((1 << 8) | a).toString(16).slice(1)}`;
     }
 
     return `#${hex}`;
   }
 
-  const a =
-    alpha !== undefined && alpha < 1
-      ? ` / ${normalize(alpha * 100, precision)}%`
-      : '';
+  const a = isTransparent ? ` / ${normalize(alpha * 100, precision)}%` : '';
 
   switch (space) {
     case 'rgb':
-      return `rgb(${Math.round(v1 * 255)} ${Math.round(v2 * 255)} ${Math.round(v3 * 255)}${a})`;
+      return `rgb(${(v1 * 255 + 0.5) | 0} ${(v2 * 255 + 0.5) | 0} ${(v3 * 255 + 0.5) | 0}${a})`;
 
     case 'hsl':
     case 'hwb':

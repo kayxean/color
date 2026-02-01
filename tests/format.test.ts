@@ -25,6 +25,11 @@ describe('CSS Formatter', () => {
       const color = createColor('rgb', [0.33333, 0.33333, 0.33333]);
       expect(formatCss(color, 1, false, 0)).toBe('rgb(85 85 85)');
     });
+
+    it('should handle extreme precision via fallback logic', () => {
+      const color = createColor('lab', [50.125, 10, -10]);
+      expect(formatCss(color, 1, false, 6)).toBe('lab(50.125% 10 -10)');
+    });
   });
 
   describe('Color Space Switch (Functional Notation)', () => {
