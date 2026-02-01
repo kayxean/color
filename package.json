@@ -6,7 +6,8 @@
     "dev": "tsdown --watch",
     "format": "biome format --write",
     "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "bench": "vitest bench"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.13",

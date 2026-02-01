@@ -4,6 +4,9 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     include: ['tests/**/*.test.ts'],
+    benchmark: {
+      include: ['tests/**/*.bench.ts'],
+    },
     environment: 'node',
     globals: true,
     coverage: {

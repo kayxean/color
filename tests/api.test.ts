@@ -1,21 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import {
-  checkContrast,
-  checkGamut,
-  clampColor,
-  createColor,
-  createHarmony,
-  createScales,
-  createShades,
-  deriveColor,
-  formatCss,
-  getDistance,
-  isEqual,
-  matchContrast,
-  mutateColor,
-  parseColor,
-  simulateDeficiency,
-} from '~/index';
+import { formatCss } from '~/format';
+import { parseColor } from '~/parse';
+import { color } from '~/shared/api';
+import { getDistance, isEqual } from '~/shared/compare';
+import { checkContrast, matchContrast } from '~/shared/contrast';
+import { checkGamut, clampColor } from '~/shared/gamut';
+import { createHarmony, createScales, createShades } from '~/shared/palette';
+import { simulateDeficiency } from '~/shared/simulate';
+import { createColor, deriveColor, mutateColor } from '~/utils';
 
 describe('Color API', () => {
   describe('Creating and Mutating', () => {
@@ -111,5 +103,48 @@ describe('Color API', () => {
       expect(simulated.space).toBe(brand.space);
       expect(simulated.value).not.toEqual(brand.value);
     });
+  });
+});
+
+describe('Public API (color factory)', () => {
+  it('should create a wrapper from a CSS string', () => {
+    const c = color('rgb(255, 0, 0)');
+    expect(c.space).toBe('rgb');
+    expect(c.value[0]).toBe(1);
+    expect(c.format()).toBe('rgb(255 0 0)');
+  });
+
+  it('should create a wrapper from space and values', () => {
+    const c = color('hsl', [180, 1, 0.5]);
+    expect(c.space).toBe('hsl');
+    expect(c.format(undefined, false, 0)).toBe('hsl(180deg 100% 50%)');
+  });
+
+  it('should throw if space is provided without values', () => {
+    expect(() => color('rgb')).toThrow(
+      'Color values are required when space is provided',
+    );
+  });
+
+  it('should support fluent conversion and formatting', () => {
+    const result = color('rgb(255, 0, 0)').to('hsl').format(0.5, false, 0);
+
+    expect(result).toBe('hsl(0deg 100% 50% / 50%)');
+  });
+
+  it('should support updating values immutably', () => {
+    const c1 = color('rgb', [1, 0, 0]);
+    const c2 = c1.update([0, 1, 0]);
+
+    expect(c1.value[0]).toBe(1);
+    expect(c2.value[0]).toBe(0);
+    expect(c2.value[1]).toBe(1);
+  });
+
+  it('should clone correctly', () => {
+    const c1 = color('lab', [50, 20, 20]);
+    const c2 = c1.clone();
+    expect(c2.raw()).not.toBe(c1.raw());
+    expect(c2.raw()).toEqual(c1.raw());
   });
 });
