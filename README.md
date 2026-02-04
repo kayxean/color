@@ -109,7 +109,7 @@ clampColor(color); // Fixes it in-place to [1, 0, 0.5]
 const diff = getDistance(colorA, colorB);
 
 // Check if RGB red is "the same" as HSL red
-const same = isEqual(parseColor('red'), parseColor('hsl(0, 100%, 50%)')); // true
+const same = isEqual(parseColor('rgb(255, 0, 0)'), parseColor('hsl(0, 100%, 50%)')); // true
 ```
 
 ### Accessibility Simulation
@@ -124,6 +124,34 @@ const brand = parseColor('#32cd32');
 // How does a person with red-blindness see this?
 const protanopiaView = simulateDeficiency(brand, 'protanopia');
 ```
+
+### Fluent API
+
+If you prefer chaining methods over passing objects around, use the `color()` function. It wraps the utilities into an immutable `ColorApi` object so you can transform colors like a sentence. Unlike the core utils, this doesn't mutate—it always returns a fresh instance.
+
+```typescript
+import { color } from './shared/api';
+
+// Create it from a functional CSS string or raw values
+const red = color('rgb(255, 0, 0)');
+const aqua = color('hsl', [180, 1, 0.5]);
+
+// Chain conversions and formatting
+const glassRed = color('rgb(255, 0, 0)')
+  .to('oklch')
+  .format(0.5, false, 2); 
+  // oklch(0.63 0.26 29.23 / 0.5)
+
+// Update values without touching the original
+const green = red.update([0, 1, 0]);
+// red is still red, green is a new object
+
+// Deep clone or grab the raw data
+const copy = green.clone();
+const data = green.raw(); // { space: 'rgb', value: Float32Array[...] }
+```
+
+It’s a high-level wrapper for the functional utils. It’s the easiest way to write readable color logic without manually managing `Float32Array` buffers at every step.
 
 ## How the math works (The "Hub" thing)
 
